@@ -59,6 +59,8 @@ def isSemantic(word):
 #경로에 있는 모든 id.json 파일의 features로 bag of word(딕셔너리)를 만들어 리턴
 def makeBow(path) :
     for item in path.iterdir():
+        if(item.is_dir()): #안보이는 디렉토리가 있다.. 주의 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+            continue
         itemJson = json.loads(item.read_text(), encoding='utf-8')
         features = itemJson["features"]
 
@@ -74,26 +76,11 @@ def makeBow(path) :
                     bow[word] = 1
     return bow
 
-#특정 문서(features)하나 만의 bag of word를 만들고, 단어개수 리턴.
-def makeSmallBow(features) :
-    smallBow = emptyBow #상품의 word count dict
-    counter = 0 #단어개수
-    for feature in features:
-        feature = delSymbol(feature) # 1. 특수기호, 이모티콘을 띄어쓰기로 대체
-        for word in feature.split(): #2. 띄어쓰기 단위로 분리
-            word = word.lower().strip('-')  #3. 겉에 남은 -  제거!
-            if not isSemantic(word): # 4. 무의미한 word는 버림
-                continue
-            smallBow[word] += 1
-            counter += 1
-    return smallBow, counter
 
 if __name__ == "__main__" :
     #bagOfWord 만들고, 저장--------------------------------------------
-    path = Path("/home/user/ML/2_2project/featureContainer")
+    path = Path('/home/jovyan/work/크롤링/featureContainer')
+    bow = {}
     bow = makeBow(path)
     # 횟수를 0으로 초기화 한, dictionary 틀
-    emptyBow = {}
-    for word, count in bow.items():
-        emptyBow[word] = 0
-    json.dump(bow, open(f'/home/user/ML/2_2project/bagOfWord' + '.json', 'w+'))
+    json.dump(bow, open(f'/home/jovyan/work/분석/bagOfWord' + '.json', 'w+'))
