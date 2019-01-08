@@ -35,7 +35,7 @@ class AmazonProductsSpider(scrapy.Spider):
         items['category'] = ''.join(category).strip()
         items['fullCategory'] = ",".join(map(lambda x: x.strip(), full_category)).strip()
         items['features'] = [] + feature
-        items['product_image_url'] = ''.join(image).strip()
+        items['image_urls'] = image
         yield items
 
 

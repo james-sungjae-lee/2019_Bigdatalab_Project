@@ -16,7 +16,8 @@ class WinterAmzItem(scrapy.Item):
     features = scrapy.Field()
     fullCategory = scrapy.Field()
     category = scrapy.Field()
-    product_image_url = scrapy.Field()
+    image_urls = scrapy.Field()
+    images = scrapy.Field()
 
 class DataAsin(scrapy.Item):
     product_data_asin = scrapy.Field()

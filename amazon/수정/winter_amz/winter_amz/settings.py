@@ -30,7 +30,7 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 5
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -70,7 +70,15 @@ DOWNLOAD_DELAY = 3
 #ITEM_PIPELINES = {
 #    'winter_amz.pipelines.WinterAmzPipeline': 300,
 #}
+ITEM_PIPELINES = {'scrapy.pipelines.images.ImagesPipeline': 1}
+IMAGES_STORE = 's3://winteramzimg/'
+AWS_ACCESS_KEY_ID = 'AKIAIOHWULXQEQSSVGKQ'
+AWS_SECRET_ACCESS_KEY= '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'
+# 120 days of delay for files expiration
+FILES_EXPIRES = 120
 
+# 30 days of delay for images expiration
+IMAGES_EXPIRES = 30
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 AUTOTHROTTLE_ENABLED = True
