@@ -29,17 +29,14 @@ def data2json(my_tag, id, username, date, contents, hash_tags, final_image_link,
     }
     return single_data
 
-my_tag = 'seoul'
-seoul_links = []
-read_csv_list(seoul_links, my_tag)
-print(seoul_links[0])
-print(len(seoul_links))
-
+my_tag = input('Enter your tag :')
+my_links = []
+read_csv_list(my_links, my_tag)
 json_list = []
 
-for i in range(len(seoul_links)-1):
+for i in range(len(my_links)-1):
     
-    test_url = seoul_links[i]
+    test_url = my_links[i]
     req = requests.get(test_url)
     html = req.text
     header = req.headers

@@ -16,7 +16,7 @@ driver.implicitly_wait(3)
 
 ## 앞에서와 마찬가지로 크롤링 할 url 을 특정 태그 기준으로 생성합니다.
 tags_url = "https://www.instagram.com/explore/tags/"
-my_tag = 'seoul'
+my_tag = input('Enter your tag :')
 url = tags_url + my_tag
 
 ## 더 빠른 크롤링을 위해 0.25 배율로 진행하고자 했으나, chrome.settingPrivate 을 인식하지 못해 실패하였습니다
@@ -28,7 +28,7 @@ url = tags_url + my_tag
 driver.get(url)
 elem = driver.find_element_by_tag_name('body')
 link_list = []
-num_of_crawling_pages = 3
+num_of_crawling_pages = int(input('Enter num of crawling pages :'))
 
 pagedowns = 0
 while pagedowns < num_of_crawling_pages:
