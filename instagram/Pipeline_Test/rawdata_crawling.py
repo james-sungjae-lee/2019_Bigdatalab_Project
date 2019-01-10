@@ -103,13 +103,17 @@ for i in range(len(my_links)-1):
             
         hash_tags = list(filter(None,hash_tags))      
     
-    ## 해쉬태그 리스트가 완성되었으므로, 해당 해쉬태그가 본문에 작성되었다면 삭제해 줍니다.
-    for tag in hash_tags:
-        tag = '#' + tag
-        contents = contents.replace(tag,"",1)
+        ## 해쉬태그 리스트가 완성되었으므로, 해당 해쉬태그가 본문에 작성되었다면 삭제해 줍니다.
+        for tag in hash_tags:
+            tag = '#' + tag
+            contents = contents.replace(tag,"",1)
 
+    ## regex 를 이용하여 텍스트 데이터 전처리
     contents = contents.replace('#','')
-        
+#     contents = re.sub("\\\\u[0-9A-Fa-f]{4}", "", contents)
+    contents = re.sub("[-()\"#/@;:<>{}`+=~|.!?,]", "", contents)
+    contents = re.sub('\n', '', contents)
+    contents = re.sub('\s+', ' ', contents)        
 
     ## 이미지 링크를 display_resources 에서 가져와 찾아냅니다.
     ## 이미지가 N개일 때, 총 N+1 종류의 이미지 링크가 존재합니다.
@@ -134,18 +138,21 @@ for i in range(len(my_links)-1):
     ## like_num, comment_num 을 description 에서 찾아냅니다.
     likes_num_p = re.compile("\"description\":\"(.*?)Likes")
     likes_num = likes_num_p.findall(str(script_content))
+    
     if len(likes_num) > 0:
         likes_num = likes_num[0]
+        likes_num = re.sub('[,\s]', '', likes_num)
     else:
         likes_num = 0
-        
+
     comments_num_p = re.compile("\"description\":\".*?,(.*?)Comments")
     comments_num = comments_num_p.findall(str(script_content))
+
     if len(comments_num) > 0:
         comments_num = comments_num[0]
+        comments_num = re.sub('[,\s]', '', comments_num)
     else:
         comments_num = 0
-    
 
     single_json = data2json(my_tag, id, username, date, contents, hash_tags, final_image_link, likes_num, comments_num)
     json_list.append(single_json)
