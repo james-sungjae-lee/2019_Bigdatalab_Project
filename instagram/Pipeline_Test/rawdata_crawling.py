@@ -2,6 +2,7 @@ import requests
 import re
 import time
 import json
+import emoji
 from bs4 import BeautifulSoup
 
 def read_csv_list(my_list, my_tag):
@@ -34,6 +35,7 @@ my_tag = input('Enter your tag :')
 my_links = []
 read_csv_list(my_links, my_tag)
 json_list = []
+emoji_keys = emoji.UNICODE_EMOJI.keys()
 
 for i in range(len(my_links)-1):
     
@@ -80,13 +82,33 @@ for i in range(len(my_links)-1):
             contents = contents.decode('unicode_escape')
             contents = contents.encode('utf-8','ignore')
             contents = contents.decode('utf-8')
-            
+        else:
+            contents = ""
 
     ## 해쉬태그를 property='instapp:hashtags' 에서 contetn= 이후 부분을 가져와 찾아냅니다.
     meta_content = soup.find_all(property = "instapp:hashtags")
     if meta_content:
         hash_tags_p = re.compile("content=\"(.*?)\"")
-        hash_tags = hash_tags_p.findall(str(meta_content))
+        emoji_hashtag = hash_tags_p.findall(str(meta_content))
+        
+        ## 해쉬태그에서 emoji 를 삭제하는 코드입니다.
+        hash_tags = []
+        for tag in emoji_hashtag:
+            for e in emoji_keys:
+                emoji_have = tag.find(e)
+
+                if emoji_have > -1:
+                    tag = tag.replace(e,'')
+            hash_tags.append(tag)
+            
+        hash_tags = list(filter(None,hash_tags))      
+    
+    ## 해쉬태그 리스트가 완성되었으므로, 해당 해쉬태그가 본문에 작성되었다면 삭제해 줍니다.
+    for tag in hash_tags:
+        tag = '#' + tag
+        contents = contents.replace(tag,"",1)
+
+    contents = contents.replace('#','')
         
 
     ## 이미지 링크를 display_resources 에서 가져와 찾아냅니다.
