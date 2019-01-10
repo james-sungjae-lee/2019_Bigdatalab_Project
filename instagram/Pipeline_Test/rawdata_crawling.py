@@ -10,9 +10,10 @@ def read_csv_list(my_list, my_tag):
     
     with open(file_name) as file:
         for line in file:
-            read_data = file.readline()
+            read_data = line
             my_list.append(read_data[:-2])
         file.close()
+    print('load ', len(my_list), 'data from csv to list')
         
 ## 찾아낸 데이터를 JSON 객체로 생성하는 함수를 정의합니다.
 def data2json(my_tag, id, username, date, contents, hash_tags, final_image_link, likes_num, comments_num):
