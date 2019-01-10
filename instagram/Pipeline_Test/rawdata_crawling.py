@@ -73,8 +73,13 @@ for i in range(len(my_links)-1):
     if script_content:   
         contents_p = re.compile("\"caption\":\"(.*?)\"")
         contents = contents_p.findall(str(script_content))
+        
         if len(contents) > 0:
             contents = contents[0]
+            contents = contents.encode('utf-8')
+            contents = contents.decode('unicode_escape')
+            contents = contents.encode('utf-8','ignore')
+            contents = contents.decode('utf-8')
             
 
     ## 해쉬태그를 property='instapp:hashtags' 에서 contetn= 이후 부분을 가져와 찾아냅니다.
