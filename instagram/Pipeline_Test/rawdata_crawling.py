@@ -34,10 +34,12 @@ def data2json(my_tag, id, username, date, contents, hash_tags, final_image_link,
 my_tag = input('Enter your tag :')
 my_links = []
 read_csv_list(my_links, my_tag)
+
 json_list = []
 emoji_keys = emoji.UNICODE_EMOJI.keys()
 
 for i in range(len(my_links)-1):
+# for i in range(1):
     
     test_url = my_links[i]
     req = requests.get(test_url)
@@ -59,6 +61,8 @@ for i in range(len(my_links)-1):
         username = username_p.findall(str(username_pp))
         if len(username) > 0:
             username = username[0]
+        else:
+            username = ''
 
 
     ## 날짜를 header 파일에서 'Date' 부분을 가져와 찾아냅니다.
@@ -67,11 +71,10 @@ for i in range(len(my_links)-1):
     if len(date) > 0:
         date = date[0]
     else:
-        date = 0
+        date = ''
         
 
     ## 글 내용을 script 내용에서 caption 부분을 가져와 찾아냅니다.
-    ## 태그 내용을 contents 에서 빼는 과정이 필요할지도 모릅니다.
     if script_content:   
         contents_p = re.compile("\"caption\":\"(.*?)\"")
         contents = contents_p.findall(str(script_content))
@@ -83,7 +86,8 @@ for i in range(len(my_links)-1):
             contents = contents.encode('utf-8','ignore')
             contents = contents.decode('utf-8')
         else:
-            contents = ""
+            contents = ''
+            
 
     ## 해쉬태그를 property='instapp:hashtags' 에서 contetn= 이후 부분을 가져와 찾아냅니다.
     meta_content = soup.find_all(property = "instapp:hashtags")
@@ -103,17 +107,16 @@ for i in range(len(my_links)-1):
             
         hash_tags = list(filter(None,hash_tags))      
     
-        ## 해쉬태그 리스트가 완성되었으므로, 해당 해쉬태그가 본문에 작성되었다면 삭제해 줍니다.
-        for tag in hash_tags:
-            tag = '#' + tag
-            contents = contents.replace(tag,"",1)
+    ## 해쉬태그 리스트가 완성되었으므로, 해당 해쉬태그가 본문에 작성되었다면 삭제해 줍니다.
+    for tag in hash_tags:
+        tag = '#' + tag
+        contents = contents.replace(tag,"",1)
 
-    ## regex 를 이용하여 텍스트 데이터 전처리
     contents = contents.replace('#','')
-#     contents = re.sub("\\\\u[0-9A-Fa-f]{4}", "", contents)
+    contents = re.sub("\\\\u[0-9A-Fa-f]{4}", "", contents)
     contents = re.sub("[-()\"#/@;:<>{}`+=~|.!?,]", "", contents)
     contents = re.sub('\n', '', contents)
-    contents = re.sub('\s+', ' ', contents)        
+    contents = re.sub('\s+', ' ', contents)
 
     ## 이미지 링크를 display_resources 에서 가져와 찾아냅니다.
     ## 이미지가 N개일 때, 총 N+1 종류의 이미지 링크가 존재합니다.
@@ -143,8 +146,10 @@ for i in range(len(my_links)-1):
         likes_num = likes_num[0]
         likes_num = re.sub('[,\s]', '', likes_num)
     else:
-        likes_num = 0
+        likes_num = '0'
+    
 
+        
     comments_num_p = re.compile("\"description\":\".*?,(.*?)Comments")
     comments_num = comments_num_p.findall(str(script_content))
 
@@ -152,15 +157,18 @@ for i in range(len(my_links)-1):
         comments_num = comments_num[0]
         comments_num = re.sub('[,\s]', '', comments_num)
     else:
-        comments_num = 0
+        comments_num = '0'
+    
 
     single_json = data2json(my_tag, id, username, date, contents, hash_tags, final_image_link, likes_num, comments_num)
     json_list.append(single_json)
-    time.sleep(0.1)
+    time.sleep(0.01)
     if i % 100 == 0:
         print(i, '번째 데이터')
         print(single_json)
         print('------------------')
+        
+print('Crawling 완료!')
         
 ## 생성한 데이터를 파일 형태로 저장합니다.
 
