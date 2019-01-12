@@ -143,13 +143,30 @@ def crawling_rawdata(my_tag):
             contents = contents_p.findall(str(script_contents))
             if len(contents) == 0:
                 contents = ['']
-                
-        contents = contents[0]
-        contents = contents.encode('utf-8')
-        contents = contents.decode('unicode_escape')
-        contents = contents.encode('utf-8','ignore')
-        contents = contents.decode('utf-8')
         
+        if script_contents:   
+            contents_p = re.compile("\"caption\":\"(.*?)\"")
+            contents = contents_p.findall(str(script_contents))
+
+            if len(contents) > 0:
+                contents = contents[0]
+                contents = contents.encode('utf-8')
+                contents = contents.decode('unicode_escape')
+                contents = contents.encode('utf-8','ignore')
+                contents = contents.decode('utf-8')
+            else:
+                contents = ''
+#                 contents_p = re.compile("\"edge_media_to_caption\".*?text\":\"(.*?)\"")
+#                 contents = contents_p.findall(str(script_contents))
+                
+#                 if len(contents) > 0:
+#                     contents = contents[0]
+#                     contents = contents.encode('utf-8')
+#                     contents = contents.decode('unicode_escape')
+#                     contents = contents.encode('utf-8','ignore')
+#                     contents = contents.decode('utf-8')
+#                 else:
+#                     contents = ''
         
         ## hashtags
         meta_content = soup.find_all(property = "instapp:hashtags")
@@ -172,12 +189,11 @@ def crawling_rawdata(my_tag):
             contents = contents.replace(tag, '', 1)
         
         ## preprocessing of contents
-        contents = contents.replace('#', '')
+        contents = contents.replace('#','')
         contents = re.sub("\\\\u[0-9A-Fa-f]{4}", "", contents)
         contents = re.sub("[-()\"#/@;:<>{}`+=~|.!?,]", "", contents)
         contents = re.sub('\n', '', contents)
         contents = re.sub('\s+', ' ', contents)
-            
 
         ## image links
         image_links_p = re.compile("\"display_resources\":\[.*?\]")
