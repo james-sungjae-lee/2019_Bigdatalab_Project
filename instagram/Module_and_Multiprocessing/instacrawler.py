@@ -73,12 +73,13 @@ def crawling_links(my_tag, num_of_crawling_pages):
     save_list_csv(set_link_list, my_tag)
     
 
-def data2json(my_tag, id, username, date, contents, hashtags, final_image_link, likes_num, comments_num):
+def data2json(my_tag, id, username, date, location, contents, hashtags, final_image_link, likes_num, comments_num):
     single_data = {
         "find_tag" : my_tag,
         "id" : id,
         "username" : username,
         "date" : date,
+        "location" : location,
         "contents" : contents,
         "hashtags" : hashtags,
         "imagelinks" : final_image_link,
@@ -89,9 +90,8 @@ def data2json(my_tag, id, username, date, contents, hashtags, final_image_link, 
 
 def save_json_file(my_tag, myjson):
     file_name = my_tag + '_rawdata.json'
-    with open(file_name, "w") as file:
-        for line in myjson:
-            file.write(str(line) + ',\n')
+    with open(file_name, 'w') as file:
+        json.dump(myjson, file)
             
 def crawling_rawdata(my_tag):
     my_links = []
@@ -135,38 +135,28 @@ def crawling_rawdata(my_tag):
         else:
             date = ''
         
-        ## contents
+        ## contents  
         contents_p = re.compile("\"caption\":\"(.*?)\"")
         contents = contents_p.findall(str(script_contents))
-        if len(contents) == 0:
-            contents_p = re.compile("\"edge_media_to_caption\".*?text\":\"(.*?)\"")
-            contents = contents_p.findall(str(script_contents))
-            if len(contents) == 0:
-                contents = ['']
-        
-        if script_contents:   
-            contents_p = re.compile("\"caption\":\"(.*?)\"")
-            contents = contents_p.findall(str(script_contents))
 
-            if len(contents) > 0:
-                contents = contents[0]
-                contents = contents.encode('utf-8')
-                contents = contents.decode('unicode_escape')
-                contents = contents.encode('utf-8','ignore')
-                contents = contents.decode('utf-8')
-            else:
-                contents = ''
-#                 contents_p = re.compile("\"edge_media_to_caption\".*?text\":\"(.*?)\"")
-#                 contents = contents_p.findall(str(script_contents))
-                
-#                 if len(contents) > 0:
-#                     contents = contents[0]
-#                     contents = contents.encode('utf-8')
-#                     contents = contents.decode('unicode_escape')
-#                     contents = contents.encode('utf-8','ignore')
-#                     contents = contents.decode('utf-8')
-#                 else:
-#                     contents = ''
+        if len(contents) > 0:
+            contents = contents[0]
+            contents = contents.encode('utf-8')
+            contents = contents.decode('unicode_escape')
+            contents = contents.encode('utf-8','ignore')
+            contents = contents.decode('utf-8')
+        else:
+            contents = ''
+        
+        ## location
+        location_p = re.compile("location\":.*?\"name\":\"(.*?)\"")
+        location = location_p.findall(str(script_contents))
+        location = ''
+
+#         if(len(location) > 0):
+#             location = location[0].encode('utf-8').decode('unicode_escape')
+#         else:
+#             location = ''
         
         ## hashtags
         meta_content = soup.find_all(property = "instapp:hashtags")
@@ -230,9 +220,10 @@ def crawling_rawdata(my_tag):
             comments_num = '0'
         
         ## save data as json
-        single_json = data2json(my_tag, id, username, date, contents, hashtags, final_image_link, likes_num, comments_num)
+        single_json = data2json(my_tag, id, username, date, location, contents,
+                                hashtags, final_image_link, likes_num, comments_num)
         json_list.append(single_json)
-        time.sleep(0.05)
+        time.sleep(1)
         if i % 30 == 0:
             print(i, '번째 데이터')
             print(single_json)
